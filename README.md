@@ -71,7 +71,7 @@ Triggered by frontend when searched items are not cached:
 Triggered when a document is created in `users/{userId}/match_history/{matchId}`:
 
 ```js
-functions.firestore.document('.../users/{userId}/match_history/{matchId}').onCreate(...)
+functions.firestore.document('users/{userId}/match_history/{matchId}').onCreate(...)
 ```
 
 1. Push interaction to ML training queue for Pairwise Preference Model updates.
@@ -82,8 +82,9 @@ functions.firestore.document('.../users/{userId}/match_history/{matchId}').onCre
 Nightly "Tournament Simulator":
 
 1. Runs nightly.
-2. Uses Preference Model to simulate matches between unseen items in vector DB.
-3. Batch writes updated Elo values to `users/{userId}/item_elos`.
+2. Retrieves candidate item pools (including unseen items) from the vector DB.
+3. Uses Preference Model to simulate matches and update Elo outcomes.
+4. Batch writes updated Elo values to `users/{userId}/item_elos`.
 
 ### 4. Frontend Strategy (React)
 
