@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "syntax-check": "node --check index.js",
-    "test": "npm run syntax-check"
+    "test:unit": "node --test *.test.js",
+    "test": "npm run syntax-check && npm run test:unit"
   },
   "engines": {
     "node": ">=20"

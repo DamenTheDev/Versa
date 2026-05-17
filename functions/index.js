@@ -36,6 +36,12 @@ function normalizeShoppingItem(rawItem) {
   };
 }
 
+function calculateSimulationEloDelta(randomFn = Math.random) {
+  return Math.floor(
+      randomFn() * (ELO_DELTA_MAX - ELO_DELTA_MIN + 1),
+  ) + ELO_DELTA_MIN;
+}
+
 exports.fetchFromGoogleShopping = onCall(async (request) => {
   const query = request.data?.query;
   if (!query || typeof query !== "string") {
@@ -106,7 +112,10 @@ exports.onDuelResolved = onDocumentCreated(
     },
 );
 
-exports.runNightlySimulations = onSchedule("every day 01:00", async () => {
+exports.runNightlySimulations = onSchedule({
+  schedule: "every day 01:00",
+  timeZone: "Etc/UTC",
+}, async () => {
   const usersSnapshot = await db
       .collection("users")
       .limit(MAX_NIGHTLY_SIMULATION_USERS)
@@ -130,9 +139,7 @@ exports.runNightlySimulations = onSchedule("every day 01:00", async () => {
     itemDocs.docs.forEach((itemDoc) => {
       const itemId = itemDoc.id;
       const eloRef = db.doc(`users/${userId}/item_elos/${itemId}`);
-      const randomDelta = Math.floor(
-          Math.random() * (ELO_DELTA_MAX - ELO_DELTA_MIN + 1),
-      ) + ELO_DELTA_MIN;
+      const randomDelta = calculateSimulationEloDelta();
       batch.set(eloRef, {
         item_id: itemId,
         elo: DEFAULT_ELO + randomDelta,
@@ -143,3 +150,6 @@ exports.runNightlySimulations = onSchedule("every day 01:00", async () => {
     await batch.commit();
   }
 });
+
+exports._normalizeShoppingItem = normalizeShoppingItem;
+exports._calculateSimulationEloDelta = calculateSimulationEloDelta;
