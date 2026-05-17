@@ -37,9 +37,8 @@ function normalizeShoppingItem(rawItem) {
 }
 
 function calculateSimulationEloDelta(randomFn = Math.random) {
-  return Math.floor(
-      randomFn() * (ELO_DELTA_MAX - ELO_DELTA_MIN + 1),
-  ) + ELO_DELTA_MIN;
+  const deltaSpan = ELO_DELTA_MAX - ELO_DELTA_MIN;
+  return ELO_DELTA_MIN + Math.round(randomFn() * deltaSpan);
 }
 
 exports.fetchFromGoogleShopping = onCall(async (request) => {
