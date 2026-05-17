@@ -5,8 +5,8 @@
   "description": "Firebase Cloud Functions for Versa",
   "main": "index.js",
   "scripts": {
-    "lint": "node --check index.js",
-    "test": "node --check index.js"
+    "syntax-check": "node --check index.js",
+    "test": "npm run syntax-check"
   },
   "engines": {
     "node": ">=20"

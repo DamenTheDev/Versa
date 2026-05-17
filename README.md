@@ -19,7 +19,7 @@ This repository includes a minimal Firebase-first backend implementation for the
 
 1. Install dependencies for Cloud Functions:
    ```bash
-   cd /home/runner/work/Versa/Versa/functions
+   cd functions
    npm install
    ```
 2. Run local lint/check as needed:
