@@ -13,6 +13,11 @@ const pubsub = new PubSub();
 const EMBEDDING_TOPIC = process.env.EMBEDDING_TOPIC || "versa-embedding-jobs";
 const TRAINING_TOPIC = process.env.TRAINING_TOPIC || "versa-training-jobs";
 const GOOGLE_SHOPPING_ENDPOINT = process.env.GOOGLE_SHOPPING_ENDPOINT;
+const MAX_NIGHTLY_SIMULATION_USERS = 100;
+const MAX_SIMULATION_ITEMS_PER_USER = 25;
+const DEFAULT_ELO = 1200;
+const ELO_DELTA_MIN = -20;
+const ELO_DELTA_MAX = 20;
 
 function normalizeShoppingItem(rawItem) {
   if (!rawItem || !rawItem.id || !rawItem.title) {
@@ -38,7 +43,7 @@ exports.fetchFromGoogleShopping = onCall(async (request) => {
   if (!GOOGLE_SHOPPING_ENDPOINT) {
     throw new HttpsError(
         "failed-precondition",
-        "GOOGLE_SHOPPING_ENDPOINT env var is not configured",
+        "GOOGLE_SHOPPING_ENDPOINT env var is not configured; set it to the Google Shopping API base URL.",
     );
   }
 
@@ -100,7 +105,10 @@ exports.onDuelResolved = onDocumentCreated(
 );
 
 exports.runNightlySimulations = onSchedule("every day 01:00", async () => {
-  const usersSnapshot = await db.collection("users").limit(100).get();
+  const usersSnapshot = await db
+      .collection("users")
+      .limit(MAX_NIGHTLY_SIMULATION_USERS)
+      .get();
   if (usersSnapshot.empty) {
     logger.info("No users found for nightly simulation");
     return;
@@ -108,7 +116,10 @@ exports.runNightlySimulations = onSchedule("every day 01:00", async () => {
 
   for (const userDoc of usersSnapshot.docs) {
     const userId = userDoc.id;
-    const itemDocs = await db.collection("public/data/items").limit(25).get();
+    const itemDocs = await db
+        .collection("public/data/items")
+        .limit(MAX_SIMULATION_ITEMS_PER_USER)
+        .get();
     if (itemDocs.empty) {
       continue;
     }
@@ -117,11 +128,12 @@ exports.runNightlySimulations = onSchedule("every day 01:00", async () => {
     itemDocs.docs.forEach((itemDoc) => {
       const itemId = itemDoc.id;
       const eloRef = db.doc(`users/${userId}/item_elos/${itemId}`);
-      const baseElo = 1200;
-      const randomDelta = Math.floor(Math.random() * 41) - 20;
+      const randomDelta = Math.floor(
+          Math.random() * (ELO_DELTA_MAX - ELO_DELTA_MIN + 1),
+      ) + ELO_DELTA_MIN;
       batch.set(eloRef, {
         item_id: itemId,
-        elo: baseElo + randomDelta,
+        elo: DEFAULT_ELO + randomDelta,
         matches_played: admin.firestore.FieldValue.increment(1),
         last_updated: admin.firestore.FieldValue.serverTimestamp(),
       }, {merge: true});

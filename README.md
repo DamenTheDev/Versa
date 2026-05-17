@@ -4,16 +4,16 @@ Versa is an open source shopping app that learns user taste through pairwise cho
 
 ## Project docs
 
-- Architecture/design: [`DESIGN.md`](./DESIGN.md)
+- Architecture/design: [`DESIGN.md`](DESIGN.md)
 
 ## Firebase implementation (minimal)
 
 This repository includes a minimal Firebase-first backend implementation for the design:
 
-- Cloud Functions entrypoint: [`functions/index.js`](./functions/index.js)
-- Firebase project config: [`firebase.json`](./firebase.json)
-- Firestore rules: [`firestore.rules`](./firestore.rules)
-- Firestore indexes: [`firestore.indexes.json`](./firestore.indexes.json)
+- Cloud Functions entrypoint: [`functions/index.js`](functions/index.js)
+- Firebase project config: [`firebase.json`](firebase.json)
+- Firestore rules: [`firestore.rules`](firestore.rules)
+- Firestore indexes: [`firestore.indexes.json`](firestore.indexes.json)
 
 ## Getting started
 
