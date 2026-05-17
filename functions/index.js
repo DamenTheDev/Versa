@@ -13,8 +13,10 @@ const pubsub = new PubSub();
 const EMBEDDING_TOPIC = process.env.EMBEDDING_TOPIC || "versa-embedding-jobs";
 const TRAINING_TOPIC = process.env.TRAINING_TOPIC || "versa-training-jobs";
 const GOOGLE_SHOPPING_ENDPOINT = process.env.GOOGLE_SHOPPING_ENDPOINT;
+// Safety caps for scheduled simulation fanout in a single invocation.
 const MAX_NIGHTLY_SIMULATION_USERS = 100;
 const MAX_SIMULATION_ITEMS_PER_USER = 25;
+// Elo simulation defaults for a lightweight nightly update.
 const DEFAULT_ELO = 1200;
 const ELO_DELTA_MIN = -20;
 const ELO_DELTA_MAX = 20;
@@ -43,7 +45,7 @@ exports.fetchFromGoogleShopping = onCall(async (request) => {
   if (!GOOGLE_SHOPPING_ENDPOINT) {
     throw new HttpsError(
         "failed-precondition",
-        "GOOGLE_SHOPPING_ENDPOINT env var is not configured; set it to the Google Shopping API base URL.",
+        "GOOGLE_SHOPPING_ENDPOINT environment variable is not configured; set it to the Google Shopping API base URL.",
     );
   }
 

@@ -4,7 +4,7 @@ Versa is an open source shopping app that learns user taste through pairwise cho
 
 ## Project docs
 
-- Architecture/design: [`DESIGN.md`](DESIGN.md)
+- Architecture/Design: [`DESIGN.md`](DESIGN.md)
 
 ## Firebase implementation (minimal)
 
